@@ -3,24 +3,33 @@
 
 ## Table of Contents
 
-- [📝 Issue and merge request Guidelines](#contribution-guidelines)
+- [📝 Issue and merge request Guidelines](#How-to-contribute)
 - [🧪 Testing](#testing)
 - [🚀 Deployment](#deployment)
 - [📝 License](#license)
 - [💬 Support](#support)
 
-## How to contribute 🤝
+## How to contribute
 
 To contribute to the project, please follow these steps:
 
-1. **Check existing issues** and pull requests before starting work 🔍
-2. **Create an issue** to discuss major changes before implementing 🗣️
+1. **Check existing issues or create new issue** and pull requests before starting work 🔍 otherwise create a new issue to discuss major changes before implementing 🗣️
+2. **Checkout or create branch from issue** If a branch is linked to the issue, either continue or create a new branch from the issue 🌿
 3. **Implement updates** implement the changes you wish to contribute 💻
 4. **Write tests** to verify your updates 🧪
-5. **Ensure all tests pass** on the CI pipeline before marking the merge request as ready ✅
+5. **Ensure all tests pass** Run the test suite and your newly added tests (if added) ✅
 6. **Update documentation** as needed 📝
-6. **Update version** Once updates have been made, update the version of the project accordingly
-7. **Mark merge request as ready** with a clear description of your changes 🚦
+7. **Create pull request and document changes** with a clear description of your changes, so that a DESP-AAS Sandbox member can confirm and merge🚦
+
+The description must be the following: 
+```
+## Fixes
+>- Fixed problem 1
+>- Fixed problem 2
+## Features
+>- Feature 1 that does this
+>- Feature 2 that does that
+```
 
 ## Contribution guidelines 📝
 
@@ -52,15 +61,7 @@ fix: resolve bug
 chore: any change that is outside of the application itself such as local configuration, bundling or testing
 ```
 
-### Versionning guidelines
-The versionning of the project is done with the following format:
-<MAJOR>.<MINOR>.<PATCH>
-1. MAJOR version when you make incompatible changes with previous releases
-2. MINOR version when you add functionality in a backward compatible manner
-3. PATCH version when you make backward compatible bug fixes
-
-
-## Testing 🧪
+## Testing
 Before submitting your contribution, please ensure that you have thoroughly tested your changes. This includes:
 
 - Writing unit tests for any new features or bug fixes.
@@ -73,19 +74,19 @@ If your contribution cannot be easily tested (e.g., documentation updates), plea
 
 We use automated CI pipelines to run tests on all merge requests. Your code must pass all tests before it can be merged.
 
-## Deployment 🚀
+## Deployment
 
 Once the merge request has been accepted and merged into development, your changes will be present in the next production release by the DESP-AAS team.
 
-## License 📝
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 📄
 
-## Support 💬
+## Support
 
 - **Documentation** 📚: Check the `/docs` directory for detailed documentation
-- **Issues** 🐞: Report bugs and feature requests on [Gitlab Issues](https://gitlab.acri-cwa.fr/desp-aas/sandbox_service/vm_management/-/issues)
-- **Merge requests** 🔀: All ongoing merge requests [Gitlab Merge requests](https://gitlab.acri-cwa.fr/desp-aas/sandbox_service/vm_management/-/merge_requests)
+- **Issues** 🐞: Report bugs and feature requests on [Github Issues](https://github.com/acri-st/DESPAAS-vm-management/issues)
+- **Merge requests** 🔀: All ongoing pull requests [Github Pull requests](https://github.com/acri-st/DESPAAS-vm-management/pulls)
 - **Contact** ✉️: Reach out to the maintainers at [srv_dsy@acri-st.fr](mailto:srv_dsy@acri-st.fr)
 
 ---

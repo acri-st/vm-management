@@ -1,254 +1,79 @@
-# VM Management Service
+# DESP-AAS VM Management
 
-A comprehensive virtual machine management service for the DESP-AAS platform. This service provides a unified API for managing virtual machines across OpenStack infrastructure, including lifecycle management, monitoring, and remote access capabilities.
 
-## Overview
+## Table of Contents
 
-The VM Management Service is a microservice that acts as a gateway between the DESP-AAS platform and OpenStack infrastructure. It provides a RESTful API for creating, managing, and monitoring virtual machines, with integrated support for Apache Guacamole for remote access and Prometheus for metrics collection.
+- [Introduction](#Introduction)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Development](#development)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [Deployment](#deployment)
+- [License](#license)
+- [Support](#support)
 
-## Features
+## Introduction
 
-- **VM Lifecycle Management**: Create, start, stop, shelve, and delete servers
-- **Remote Access**: Web-based SSH/RDP access via Apache Guacamole
-- **Monitoring**: Real-time resource metrics via Prometheus
-- **Automation**: Automatic suspension of inactive servers
-- **Database Integration**: Persistent server state tracking
+###  What is the DESP-AAS Sandbox?
 
-- **Server Creation**: Automated VM provisioning using Terraform and Ansible
-- **Lifecycle Operations**: Start, stop, shelve, unshelve, reset, and delete servers
-- **State Management**: Track server states throughout their lifecycle
-- **Infrastructure Integration**: Seamless integration with OpenStack APIs
+DESP-AAS Sandbox is a service that allows users to develop applications and models using cloud based services and to ease the deployment to the DESP-AAS collaborative platform.
 
-### 🔐 Remote Access
+The Microservices that make up the Sandbox project are the following: 
+- **Auth** Authentication service tu authenticate users.
+- **Project management** Project management system.
+- **VM management** manages the virtual machines for the projects. These virtual machines are where the user manages their project and develops.
+- **Storage** Manages the project git files.
 
-- **Apache Guacamole Integration**: Web-based remote access to VMs
-- **Multi-protocol Support**: SSH and RDP connections
-- **User Management**: Automatic user creation and group assignment
-- **Connection Management**: Dynamic connection creation and cleanup
 
-### 📊 Monitoring & Metrics
+### What is the VM Management?
 
-- **Prometheus Integration**: Real-time resource monitoring
-- **Performance Metrics**: CPU, memory, disk, and network usage
-- **Historical Data**: Time-series metrics with configurable time ranges
-- **Resource Tracking**: Comprehensive server resource utilization
+The VM Management service is a microservice that manages virtual machines for projects within the DESP-AAS (Data Exchange and Service Platform - As A Service) ecosystem. It provides the infrastructure and tools necessary for users to create, configure, and manage virtual machines where they develop and run their applications and models.
 
-### 🔄 Lifecycle Automation
+The VM Management service handles:
+- **VM Provisioning** Creating and deploying virtual machines for user projects
+- **Resource Management** Allocating and monitoring compute resources (CPU, memory, storage)
+- **Lifecycle Management** Starting, stopping, and terminating VMs as needed
+- **Configuration Management** Setting up development environments and required software
+- **Integration** Working with other DESP-AAS microservices like Project Management and Storage
 
-- **Automatic Suspension**: Suspend inactive servers to save resources
-- **Notification System**: Email notifications for server lifecycle events
-- **Cleanup Policies**: Automatic deletion of long-suspended servers
-- **Background Processing**: Asynchronous lifecycle management
+This service is a critical component of the DESP-AAS Sandbox, providing the development environment where users can build and test their applications before deploying to the main DESP-AAS collaborative platform.
 
-### 🗄️ Data Management
+## Prerequisites
 
-- **Database Integration**: Persistent server state tracking
-- **Event Logging**: Comprehensive audit trail of server operations
-- **Project Association**: Link servers to specific projects and users
-- **Transaction Support**: ACID-compliant database operations
+Before you begin, ensure you have the following installed:
+- **Git** 
+- **Docker** Docker is mainly used for the test suite, but can also be used to deploy the project via docker compose
 
-## Architecture
+## Installation
 
-### Core Components
-
+1. Clone the repository:
+```bash
+git clone https://github.com/acri-st/DESPAAS-vm-management.git
+cd DEESPAAS-vm-management
 ```
-vm_management/
-├── routes/v1/           # API endpoints
-│   ├── servers.py       # Main server management endpoints
-│   ├── openstack_servers.py  # OpenStack-specific operations
-│   ├── guacemole.py     # Remote access configuration
-│   └── metrics.py       # Monitoring and metrics endpoints
-├── services/            # Business logic layer
-│   ├── server_service.py      # Main server orchestration
-│   ├── openstack_server_service.py  # OpenStack API integration
-│   ├── guacamole_service.py   # Remote access management
-│   ├── lifecycle_service.py   # Automated lifecycle management
-│   ├── prometheus_service.py  # Metrics collection
-│   ├── sandbox_db_service.py  # Database operations
-│   └── infrastructure_service.py  # Terraform/Ansible integration
-├── models/              # Data models and schemas
-├── connectors/          # External service connectors
-└── utils.py            # Utility functions
-```
-
-### Technology Stack
-
-- **Framework**: FastAPI with MSFWK (Microservice Framework)
-- **Infrastructure**: OpenStack SDK for cloud operations
-- **Remote Access**: Apache Guacamole API integration
-- **Monitoring**: Prometheus API client
-- **Automation**: Ansible Runner for configuration management
-- **Infrastructure as Code**: Terraform integration via Kubernetes jobs
-- **Messaging**: RabbitMQ for asynchronous operations
-- **Database**: PostgreSQL (via shared library)
-- **Containerization**: Docker with multi-stage builds
-
-## API Endpoints
-
-### Server Management (`/servers`)
-
-- `POST /` - Create a new server
-- `GET /` - List all servers
-- `GET /{server_id}` - Get server details
-- `POST /{server_id}/actions/shelve` - Shelve a server
-- `POST /{server_id}/actions/unshelve` - Unshelve a server
-- `POST /{server_id}/actions/reset` - Reset a server
-- `DELETE /{server_id}` - Delete a server
-- `POST /{server_id}/actions/run-ansible` - Install applications
-- `POST /suspended` - List suspended servers
-
-### OpenStack Operations (`/openstack-servers`)
-
-- `GET /` - List OpenStack servers
-- `GET /{openstack_server_id}` - Get OpenStack server details
-- `POST /{openstack_server_id}/actions/shelve` - Shelve OpenStack server
-- `POST /{openstack_server_id}/actions/unshelve` - Unshelve OpenStack server
-- `POST /{openstack_server_id}/actions/reset` - Reset OpenStack server
-- `DELETE /{openstack_server_id}` - Delete OpenStack server
-
-### Remote Access (`/guacamole`)
-
-- `GET /base-url` - Get Guacamole base URL
-
-### Monitoring (`/metrics`)
-
-- `GET /resources/{server_id}/cpu` - Get CPU usage metrics
-- `GET /resources/{server_id}/memory` - Get memory usage metrics
-- `GET /resources/{server_id}/disk` - Get disk usage metrics
-- `GET /resources/{server_id}/network` - Get network traffic metrics
-
-## Configuration
-
-The service uses environment variables and configuration files for setup:
-
-### Key Configuration Options
-
-- **OpenStack**: Connection parameters for OpenStack APIs
-- **Guacamole**: Base URL, admin credentials, and connection settings
-- **Prometheus**: Metrics collection endpoint and query parameters
-- **Database**: Connection string and schema configuration
-- **Lifecycle**: Suspension thresholds and notification settings
 
 ## Development
 
-### Prerequisites
+## Development Mode
 
-- Python 3.12+
-- Docker and Docker Compose
-- OpenStack access credentials
-- PostgreSQL database
-- RabbitMQ message broker
+### Standard local development
 
-### Local Development Setup
-
+Setup environment
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd vm_management
-
-# Install dependencies
-uv sync
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
-
-# Run the service
-uv run python -m vm_management.main
+make setup
 ```
 
-### Testing
-
+Start the development server:
 ```bash
-# Run tests
-pytest
-
-# Run with coverage
-pytest --cov=vm_management
-
-# Run specific test categories
-pytest tests/unit/
-pytest tests/integration/
+make start
 ```
 
-### Docker Build
-
+To clean the project and remove node_modules and other generated files, use:
 ```bash
-# Build the Docker image
-docker build -t vm-management .
-
-# Run the container
-docker run -p 8000:8000 vm-management
+make clean
 ```
-
-## Deployment
-
-### Kubernetes Deployment
-
-The service is designed to run in Kubernetes environments with:
-
-- ConfigMaps for configuration management
-- Secrets for sensitive data
-- Service accounts for OpenStack authentication
-- Horizontal Pod Autoscaler for scaling
-
-### CI/CD Pipeline
-
-- Automated testing on pull requests
-- Docker image building and pushing
-- Deployment to staging and production environments
-- Integration with GitLab CI/CD
-
-## Monitoring and Observability
-
-
-### Logging
-
-- Structured logging with correlation IDs
-- Integration with centralized logging systems
-- Audit trail for all server operations
-
-### Metrics
-
-- Prometheus metrics for service performance
-- Custom metrics for business operations
-- Integration with Grafana dashboards
-
-## Security
-
-### Authentication & Authorization
-
-- Integration with DESP-AAS authentication system
-- Role-based access control
-- API key management for internal services
-
-### Data Protection
-
-- Encrypted communication with external services
-- Secure credential management
-- Audit logging for compliance
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
-
-## License
-
-This project is part of the DESP-AAS platform and follows the same licensing terms.
-
-## Support
-
-For support and questions:
-
-- Create an issue in the GitLab repository
-- Contact the DESP-AAS development team
-- Check the project documentation
-
----
-
-**Note**: This service is part of the larger DESP-AAS ecosystem and should be deployed alongside other microservices for full functionality.
+Check out the **CONTRIBUTING.md** for more details on how to contribute.
