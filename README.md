@@ -1,4 +1,4 @@
-# DESP-AAS VM Management
+# VM Management
 
 
 ## Table of Contents
@@ -15,9 +15,9 @@
 
 ## Introduction
 
-###  What is the DESP-AAS Sandbox?
+###  What is the Sandbox?
 
-DESP-AAS Sandbox is a service that allows users to develop applications and models using cloud based services and to ease the deployment to the DESP-AAS collaborative platform.
+Sandbox is a service that allows users to develop applications and models using cloud based services and to ease the deployment .
 
 The Microservices that make up the Sandbox project are the following: 
 - **Auth** Authentication service tu authenticate users.
@@ -28,16 +28,16 @@ The Microservices that make up the Sandbox project are the following:
 
 ### What is the VM Management?
 
-The VM Management service is a microservice that manages virtual machines for projects within the DESP-AAS (Data Exchange and Service Platform - As A Service) ecosystem. It provides the infrastructure and tools necessary for users to create, configure, and manage virtual machines where they develop and run their applications and models.
+The VM Management service is a microservice that manages virtual machines for projects. It provides the infrastructure and tools necessary for users to create, configure, and manage virtual machines where they develop and run their applications and models.
 
 The VM Management service handles:
 - **VM Provisioning** Creating and deploying virtual machines for user projects
 - **Resource Management** Allocating and monitoring compute resources (CPU, memory, storage)
 - **Lifecycle Management** Starting, stopping, and terminating VMs as needed
 - **Configuration Management** Setting up development environments and required software
-- **Integration** Working with other DESP-AAS microservices like Project Management and Storage
+- **Integration** Working with other microservices like Project Management and Storage
 
-This service is a critical component of the DESP-AAS Sandbox, providing the development environment where users can build and test their applications before deploying to the main DESP-AAS collaborative platform.
+This service is a critical component of the Sandbox, providing the development environment where users can build and test their applications before deploying to the main collaborative platform.
 
 ## Prerequisites
 
@@ -49,7 +49,7 @@ Before you begin, ensure you have the following installed:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/acri-st/DESPAAS-vm-management.git
+git clone https://github.com/acri-st/vm-management.git
 cd DEESPAAS-vm-management
 ```
 
