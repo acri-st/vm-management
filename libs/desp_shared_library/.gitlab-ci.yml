@@ -1,0 +1,99 @@
+include:
+  - remote: https://gitlab.acri-cwa.fr/devops/ci-templates/-/raw/main/workflow_template.yaml
+  - remote: https://gitlab.acri-cwa.fr/devops/ci-templates/-/raw/main/python_template.yaml
+
+stages:
+  - test
+  - validate
+  - build
+  - scan
+  - deploy
+  - release
+
+sonarqube-check:
+  stage: validate
+  image: sonarsource/sonar-scanner-cli:latest
+  tags:
+    - k8s
+    - light
+    - shared
+  script:
+    - sonar-scanner
+      -Dsonar.projectKey=despaas
+      -Dsonar.sources=msfwk
+      -Dsonar.projectVersion=development
+      -Dsonar.host.url=https://sonarqube.shared.acrist-services.com
+      -Dsonar.java.options=-Djavax.net.ssl.trustStore=/usr/src/truststore.jks -Djavax.net.ssl.trustStorePassword=changeit
+      -Dsonar.python.coverage.reportPaths=coverage.xml  
+      -Dsonar.python.xunit.reportPaths=report.xml 
+      -Dsonar.exclusions=tests/**
+  allow_failure: true
+
+virus-scan:
+  stage: validate
+  image: gitlabreg.acri-cwa.fr:443/dsy/automation/antivirus-scanner/av-scanner:D-2
+  tags:
+    - k8s
+    - light
+    - shared
+  cache:
+    key: clamav-db
+    paths:
+      - /var/lib/clamav
+  variables:
+    SCAN_PATH: $CI_PROJECT_DIR
+  script:
+    - timeout 5m freshclam --no-warnings
+    - clamscan --infected --allmatch=yes --recursive=yes --archive-verbose --max-filesize=200M --log=clamscan-report.txt $SCAN_PATH
+    - echo "SCAN_PATH=$SCAN_PATH"
+  allow_failure: false
+  artifacts:
+    when: always
+    paths:
+      - clamscan-report.txt
+
+linting:
+  extends:
+    - .ruff_lint
+  allow_failure: true
+    
+
+# tests:
+#   stage: test
+#   image: python:3.10-slim
+#   script:
+#     - apt-get update;apt-get install gcc libsqlite3-dev -y
+#     - pip install -r requirements.txt
+#     - pip install '.[test]'
+#     - coverage run --branch -m pytest --junitxml=report.xml
+#     - coverage report -m
+#     - coverage xml
+#   tags:
+#     - k8s-light
+#   rules: 
+#     - if: $SKIP_TEST != "true"
+#   artifacts:
+#     when: always
+#     reports:
+#       junit: report.xml
+#       cobertura: coverage.xml
+#     expire_in: 1 month
+#   coverage: '/TOTAL.*\s+(\d+%)$/'
+
+build-library-image:
+  image: ghcr.io/astral-sh/uv:python3.12-bookworm
+  stage: build
+  tags:
+    - k8s
+    - shared
+  script:
+    - uv sync
+    - uv build
+    - uv publish
+  variables:
+    UV_PUBLISH_URL: https://gitlab.acri-cwa.fr/api/v4/projects/782/packages/pypi
+    UV_PUBLISH_TOKEN: $PIP_REPO_TOKEN
+    UV_INDEX_DSY_PIP_PASSWORD: $PIP_REPO_TOKEN
+  rules:
+    - if: '$CI_MERGE_REQUEST_ID == null'  # This job will not run if it's a merge request
+

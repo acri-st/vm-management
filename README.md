@@ -50,7 +50,7 @@ Before you begin, ensure you have the following installed:
 1. Clone the repository:
 ```bash
 git clone https://github.com/acri-st/vm-management.git
-cd DEESPAAS-vm-management
+cd vm-management
 ```
 
 ## Development
